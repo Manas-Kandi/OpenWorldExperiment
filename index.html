@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Quest Arena - Open-Ended Learning Environment</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1><i class="fas fa-gamepad"></i> Mini-Quest Arena</h1>
+            <div class="game-stats">
+                <div class="stat-item">
+                    <i class="fas fa-trophy"></i>
+                    <span id="score">0</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="timer">0:00</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-shoe-prints"></i>
+                    <span id="moves">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="goal-panel">
+                <div class="goal-header">
+                    <i class="fas fa-bullseye"></i>
+                    <h2>Current Goal</h2>
+                </div>
+                <div class="goal-content" id="goal-text">
+                    Loading goal...
+                </div>
+                <div class="goal-timer" id="goal-timer">
+                    <div class="timer-bar"></div>
+                </div>
+            </div>
+
+            <div class="arena-container">
+                <div class="arena-wrapper">
+                    <canvas id="game-canvas" width="600" height="600"></canvas>
+                    <div class="arena-overlay" id="arena-overlay">
+                        <div class="message-box" id="message-box" style="display: none;">
+                            <div class="message-content"></div>
+                            <button class="message-button" onclick="game.hideMessage()">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="controls-section">
+                    <h3><i class="fas fa-arrows-alt"></i> Movement</h3>
+                    <div class="movement-controls">
+                        <div class="control-row">
+                            <button class="control-btn" data-action="move-up"><i class="fas fa-arrow-up"></i></button>
+                        </div>
+                        <div class="control-row">
+                            <button class="control-btn" data-action="move-left"><i class="fas fa-arrow-left"></i></button>
+                            <button class="control-btn" data-action="move-down"><i class="fas fa-arrow-down"></i></button>
+                            <button class="control-btn" data-action="move-right"><i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="controls-section">
+                    <h3><i class="fas fa-hand-rock"></i> Actions</h3>
+                    <div class="action-controls">
+                        <button class="action-btn" data-action="pickup"><i class="fas fa-hand-paper"></i> Pickup</button>
+                        <button class="action-btn" data-action="drop"><i class="fas fa-hand-point-down"></i> Drop</button>
+                        <button class="action-btn" data-action="interact"><i class="fas fa-mouse-pointer"></i> Interact</button>
+                    </div>
+                </div>
+
+                <div class="controls-section">
+                    <h3><i class="fas fa-gamepad"></i> Game</h3>
+                    <div class="game-controls">
+                        <button class="game-btn primary" id="new-game-btn"><i class="fas fa-play"></i> New Game</button>
+                        <button class="game-btn secondary" id="reset-btn"><i class="fas fa-redo"></i> Reset</button>
+                        <button class="game-btn secondary" id="ai-toggle-btn"><i class="fas fa-robot"></i> AI: OFF</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="inventory-panel">
+            <h3><i class="fas fa-backpack"></i> Inventory</h3>
+            <div class="inventory-slots" id="inventory-slots">
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+                <div class="inventory-slot empty"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="game-over-modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Round Complete!</h2>
+            <div class="final-stats">
+                <div class="stat-row">
+                    <span>Final Score:</span>
+                    <span id="final-score">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Time Taken:</span>
+                    <span id="final-time">0:00</span>
+                </div>
+                <div class="stat-row">
+                    <span>Moves Used:</span>
+                    <span id="final-moves">0</span>
+                </div>
+                <div class="stat-row">
+                    <span>Efficiency Bonus:</span>
+                    <span id="efficiency-bonus">0</span>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn primary" onclick="game.startNewRound()">Next Round</button>
+                <button class="modal-btn secondary" onclick="game.resetGame()">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
