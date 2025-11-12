@@ -332,13 +332,24 @@ class LLMGoalCoach:
             logger.error("Failed to parse LLM output: %s", raw_text)
             raise RuntimeError("LLM response was not valid JSON.") from exc
 
-        actions = [
-            ToolCall(
-                tool=entry.get("tool", ""),
-                arguments=entry.get("arguments") or {},
-            )
-            for entry in payload.get("actions", [])
-        ]
+        actions: List[ToolCall] = []
+        for entry in payload.get("actions", []):
+            tool_name = entry.get("tool") or entry.get("name")
+            if not tool_name:
+                logger.warning("LLM response missing tool name: %s", entry)
+                continue
+            arguments = entry.get("arguments") or {}
+            if not isinstance(arguments, dict):
+                logger.warning(
+                    "LLM response provided non-dict arguments for tool %s: %s",
+                    tool_name,
+                    arguments,
+                )
+                continue
+            actions.append(ToolCall(tool=tool_name, arguments=arguments))
+
+        if not actions:
+            logger.warning("LLM returned no valid actions. Raw response: %s", raw_text.strip())
 
         return LLMPlan(thought=payload.get("thought", ""), actions=actions)
 
