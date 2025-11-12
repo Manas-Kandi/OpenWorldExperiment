@@ -29,7 +29,7 @@ from .task_generation import DynamicTaskGenerator, TaskInstance, GameMode, TaskC
 from .population_training import PopulationBasedTrainer, PBTConfig, AgentState
 from .curriculum_learning import AdaptiveCurriculumScheduler, CurriculumConfig, CurriculumType
 from .evaluation_system import EvaluationSystem, EvaluationConfig, GeneralizationEvaluator
-from .behavior_analysis import BehaviorAnalyzer, BehaviorVisualizer
+from .behavior_analysis import BehaviorAnalyzer, BehaviorVisualizer, BehaviorReporter
 from .multi_agent_coordination import MultiAgentCoordinator, MultiAgentConfig, MultiAgentRole
 from .training_orchestrator import TrainingOrchestrator, TrainingConfig, create_default_config, create_research_config
 
@@ -47,6 +47,8 @@ __all__ = [
     'AdaptiveCurriculumScheduler',
     'EvaluationSystem',
     'BehaviorAnalyzer',
+    'BehaviorVisualizer',
+    'BehaviorReporter',
     'MultiAgentCoordinator',
     'TrainingOrchestrator',
     

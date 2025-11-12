@@ -13,7 +13,7 @@ from .task_generation import DynamicTaskGenerator, GameMode
 from .population_training import PopulationBasedTrainer, PBTConfig, AgentState
 from .curriculum_learning import AdaptiveCurriculumScheduler, CurriculumConfig
 from .evaluation_system import EvaluationSystem, EvaluationConfig
-from .behavior_analysis import BehaviorAnalyzer, BehaviorVisualizer, BehaviorReporting
+from .behavior_analysis import BehaviorAnalyzer, BehaviorVisualizer, BehaviorReporter
 
 @dataclass
 class TrainingConfig:
@@ -125,7 +125,7 @@ class TrainingOrchestrator:
         
         # Behavior visualizer and reporter
         self.behavior_visualizer = BehaviorVisualizer()
-        self.behavior_reporter = BehaviorReporting(
+        self.behavior_reporter = BehaviorReporter(
             output_dir=f"{self.config.output_dir}/behavior_reports"
         )
         

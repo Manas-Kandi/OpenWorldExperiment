@@ -551,6 +551,9 @@ class EvaluationSystem:
                 )
             }
         
+        # Attach normalized task metrics inspired by Nash baseline analysis
+        nash_task_baselines = self._attach_normalized_metrics(agent_results)
+        
         # Population-level analysis
         population_metrics = self._analyze_population_performance(agent_results)
         
@@ -558,6 +561,7 @@ class EvaluationSystem:
         evaluation_report = {
             'evaluation_config': self.config.__dict__,
             'held_out_task_summary': self._summarize_held_out_tasks(held_out_tasks),
+            'nash_task_baselines': nash_task_baselines,
             'agent_results': agent_results,
             'population_metrics': population_metrics,
             'timestamp': time.time()
@@ -616,12 +620,77 @@ class EvaluationSystem:
         
         return overall
     
+    def _attach_normalized_metrics(self, agent_results: Dict[str, Any]) -> Dict[str, float]:
+        """
+        Compute Nash-style baselines and normalized score percentiles per agent.
+        Returns:
+            Dictionary mapping task_id -> baseline score (mean success across population)
+        """
+        task_scores = defaultdict(list)
+        
+        # Gather raw success rates per task across all agents
+        for data in agent_results.values():
+            for result in data['detailed_results']:
+                task_scores[result.task_id].append(result.success_rate)
+        
+        # Baseline approximation: mean success for each task
+        baselines = {
+            task_id: float(np.mean(scores)) if scores else 0.0
+            for task_id, scores in task_scores.items()
+        }
+        
+        percentile_targets = [10, 25, 50, 75, 90]
+        
+        for agent_id, data in agent_results.items():
+            normalized_scores = []
+            participation_hits = 0
+            detailed_results = data.get('detailed_results', [])
+            
+            for result in detailed_results:
+                baseline = baselines.get(result.task_id, 0.0)
+                denom = abs(baseline) + 1e-6
+                normalized_value = (result.success_rate - baseline) / denom
+                normalized_scores.append(normalized_value)
+                
+                # Expose normalized score alongside other detailed metrics
+                result.detailed_metrics['normalized_score'] = normalized_value
+                
+                if result.average_reward > 0:
+                    participation_hits += 1
+            
+            if normalized_scores:
+                percentile_summary = {
+                    f'p{p}': float(np.percentile(normalized_scores, p))
+                    for p in percentile_targets
+                }
+            else:
+                percentile_summary = {f'p{p}': 0.0 for p in percentile_targets}
+            
+            participation_rate = participation_hits / max(1, len(detailed_results))
+            
+            data['normalized_score_percentiles'] = percentile_summary
+            data['participation_rate'] = participation_rate
+        
+        return baselines
+    
     def _analyze_population_performance(self, 
                                        agent_results: Dict[str, Any]) -> Dict[str, float]:
         """Analyze performance across the entire population."""
         overall_scores = [result['overall_score'] for result in agent_results.values()]
         zero_shot_scores = [result['zero_shot_metrics']['overall_zero_shot_success'] 
                            for result in agent_results.values()]
+        participation_rates = [result.get('participation_rate', 0.0) 
+                              for result in agent_results.values()]
+        
+        percentile_keys = set()
+        for result in agent_results.values():
+            percentile_keys.update(result.get('normalized_score_percentiles', {}).keys())
+        
+        percentile_summary = {}
+        for key in percentile_keys:
+            values = [result.get('normalized_score_percentiles', {}).get(key, 0.0)
+                      for result in agent_results.values()]
+            percentile_summary[key] = float(np.mean(values)) if values else 0.0
         
         return {
             'population_mean_score': np.mean(overall_scores),
@@ -630,7 +699,10 @@ class EvaluationSystem:
             'population_worst_score': np.min(overall_scores),
             'population_mean_zero_shot': np.mean(zero_shot_scores),
             'population_std_zero_shot': np.std(zero_shot_scores),
-            'generalization_gap': np.mean(zero_shot_scores) - np.mean(overall_scores)
+            'generalization_gap': np.mean(zero_shot_scores) - np.mean(overall_scores),
+            'population_percentile_summary': percentile_summary,
+            'population_participation_mean': float(np.mean(participation_rates)) if participation_rates else 0.0,
+            'population_participation_std': float(np.std(participation_rates)) if participation_rates else 0.0
         }
     
     def _summarize_held_out_tasks(self, tasks: List[TaskInstance]) -> Dict[str, Any]:

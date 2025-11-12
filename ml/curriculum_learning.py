@@ -73,7 +73,7 @@ class CompetencyTracker:
             return recent_performances[0]
         
         # Weight recent performances more heavily
-        weights = np.array([self.decay_rate ** i for i in range(len(recent_performs)-1, -1, -1)])
+        weights = np.array([self.decay_rate ** i for i in range(len(recent_performances)-1, -1, -1)])
         weights = weights / weights.sum()
         
         return np.average(recent_performances, weights=weights)
@@ -472,7 +472,7 @@ class AdaptiveCurriculumScheduler:
                 complexities = list(TaskComplexity)
                 for i, complexity in enumerate(complexities[1:], 1):
                     if current_distribution[complexity] > 0.05:
-                        transfer = min(current_distribution[complexity] * abs(adjustancement), 
+                        transfer = min(current_distribution[complexity] * abs(adjustment), 
                                      current_distribution[complexity] * 0.5)
                         current_distribution[complexity] -= transfer
                         current_distribution[complexities[i - 1]] += transfer

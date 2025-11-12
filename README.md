@@ -147,6 +147,22 @@ This implementation serves as a testbed for:
 - **Human-AI Interaction**: Comparative performance studies
 - **Curriculum Learning**: Progressive difficulty scaling
 
+## 📚 Alignment with DeepMind's Open-Ended Play Research
+
+Mini-Quest Arena mirrors the loop described in *“Open-Ended Learning Leads to Generally Capable Agents”* by combining:
+- **Dynamic Task Generation** that keeps difficulty “just right,” powered by adaptive curricula and competency tracking.
+- **Goal-Attentive (GOAT) Policies** that echo the blog’s attention-equipped recurrent agents for subgoal discovery.
+- **Population-Based Training (PBT) & Generational Bootstrapping** so each cohort benefits from the previous one’s behaviors.
+- **Behavior Analysis Pipeline** that surfaces experimentation, tool use, and cooperation heuristics seen in XLand probes.
+
+## 🧪 Evaluation Methodology
+
+To reflect the paper’s evaluation protocol, the ML stack now:
+- Computes **Nash-style baselines** per held-out task and normalizes every agent’s score before comparison.
+- Tracks **percentiles of normalized scores** (P10–P90) so an agent only “wins” if it dominates across the distribution.
+- Reports **participation rate** — the percentage of tasks where an agent achieved non-zero reward, mirroring the blog’s participation metric.
+- Bundles these metrics with classical zero-shot, few-shot, and transfer evaluations for a holistic generality score.
+
 ## 🎯 Future Enhancements
 
 ### Planned Features
