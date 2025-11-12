@@ -69,7 +69,11 @@ def print_component_overview():
     component_info = get_component_info()
     for component, info in component_info.items():
         print(f"\n{component.upper()}:")
-        print(f"  Main Class: {info['main_class']}")
+        if 'main_class' in info:
+            print(f"  Main Class: {info['main_class']}")
+        elif 'main_classes' in info:
+            classes = ', '.join(info['main_classes'])
+            print(f"  Main Classes: {classes}")
         print(f"  Features: {', '.join(info['features'])}")
         print(f"  Reference: {info['paper_reference']}")
 

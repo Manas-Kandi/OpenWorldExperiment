@@ -31,7 +31,14 @@ from .curriculum_learning import AdaptiveCurriculumScheduler, CurriculumConfig, 
 from .evaluation_system import EvaluationSystem, EvaluationConfig, GeneralizationEvaluator
 from .behavior_analysis import BehaviorAnalyzer, BehaviorVisualizer, BehaviorReporter
 from .multi_agent_coordination import MultiAgentCoordinator, MultiAgentConfig, MultiAgentRole
-from .training_orchestrator import TrainingOrchestrator, TrainingConfig, create_default_config, create_research_config
+from .training_orchestrator import (
+    TrainingOrchestrator,
+    TrainingConfig,
+    create_default_config,
+    create_research_config,
+    create_quick_test_config,
+    ExperimentRunner,
+)
 from .llm_bridge import (
     LLMGoalCoach,
     HybridLLMAgent,
@@ -90,7 +97,9 @@ __all__ = [
     
     # Utility functions
     'create_default_config',
-    'create_research_config'
+    'create_research_config',
+    'create_quick_test_config',
+    'ExperimentRunner'
 ]
 
 def get_version():
