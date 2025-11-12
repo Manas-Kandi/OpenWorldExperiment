@@ -163,6 +163,63 @@ To reflect the paper’s evaluation protocol, the ML stack now:
 - Reports **participation rate** — the percentage of tasks where an agent achieved non-zero reward, mirroring the blog’s participation metric.
 - Bundles these metrics with classical zero-shot, few-shot, and transfer evaluations for a holistic generality score.
 
+## 🧠 LLM-Assisted Control (Hybrid RL + Tiny LLM)
+
+The `ml/llm_bridge.py` module lets a small instruction-tuned LLM read the textual goal, reason about the current world state, and issue actions through a **toolbox** that mirrors Mini-Quest Arena’s controls (`move`, `pickup`, `drop`, `interact`). This enables:
+- Goal understanding + validation by the LLM before committing moves.
+- Tool execution that feeds directly into the same environment surface the reinforcement learner uses.
+- Hybrid agents where PPO provides fast reflexes while the LLM intervenes periodically for high-level decisions.
+
+### Setup
+1. Install the OpenAI-compatible client: `pip install openai`.
+2. Copy `.env.example` to `.env` and insert your API credentials:
+   ```bash
+   cp .env.example .env
+   # edit LLM_API_KEY, optional LLM_MODEL/BASE_URL overrides
+   ```
+3. (Optional) run the demo: `python ml_example.py --mode llm_demo --goal "Collect the purple cube"`
+
+### Tiny-model API example
+```python
+from ml.llm_bridge import LLMGoalCoach, MiniQuestToolbox, SimpleMiniQuestController
+
+controller = SimpleMiniQuestController()
+toolbox = MiniQuestToolbox(controller)
+coach = LLMGoalCoach(toolbox)
+
+plan = coach.propose_plan(
+    goal_text="Collect the purple cube and place it in the green zone.",
+    state_summary=controller.summarize_state(),
+    stream=True  # Streams tokens à la NVIDIA integrate endpoint
+)
+
+for action in plan.actions:
+    result = toolbox.execute(action)
+    print(f"Tool={action.tool} :: {result.observation}")
+```
+Behind the scenes this uses the OpenAI chat interface, so you can point it to NVIDIA’s `integrate.api.nvidia.com/v1` (or any compatible endpoint) via the `.env` file:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key=os.environ["LLM_API_KEY"],
+)
+completion = client.chat.completions.create(
+    model="mistralai/mistral-7b-instruct-v0.3",
+    messages=[{"role": "user", "content": "what is nuclear physics?"}],
+    temperature=0.2,
+    top_p=0.7,
+    max_tokens=512,
+    stream=True,
+)
+for chunk in completion:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+```
+Swap in task- and tool-specific prompts (as done in `LLMGoalCoach`) to let the model reason about goals, evaluate progress, and choose the next control to execute. The hybrid agent (`HybridLLMAgent`) can then alternate between RL actions and LLM-issued tool calls, giving you a playground for “LLM-improves-RL, RL-improves-LLM” experiments.
+
 ## 🎯 Future Enhancements
 
 ### Planned Features

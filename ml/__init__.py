@@ -32,6 +32,17 @@ from .evaluation_system import EvaluationSystem, EvaluationConfig, Generalizatio
 from .behavior_analysis import BehaviorAnalyzer, BehaviorVisualizer, BehaviorReporter
 from .multi_agent_coordination import MultiAgentCoordinator, MultiAgentConfig, MultiAgentRole
 from .training_orchestrator import TrainingOrchestrator, TrainingConfig, create_default_config, create_research_config
+from .llm_bridge import (
+    LLMGoalCoach,
+    HybridLLMAgent,
+    MiniQuestToolbox,
+    SimpleMiniQuestController,
+    GameToolbox,
+    ToolSpec,
+    ToolCall,
+    ToolActionResult,
+    LLMPlan,
+)
 
 __version__ = "1.0.0"
 __author__ = "Open-Ended Learning Team"
@@ -51,6 +62,15 @@ __all__ = [
     'BehaviorReporter',
     'MultiAgentCoordinator',
     'TrainingOrchestrator',
+    'LLMGoalCoach',
+    'HybridLLMAgent',
+    'MiniQuestToolbox',
+    'SimpleMiniQuestController',
+    'GameToolbox',
+    'ToolSpec',
+    'ToolCall',
+    'ToolActionResult',
+    'LLMPlan',
     
     # Configuration classes
     'RLConfig',

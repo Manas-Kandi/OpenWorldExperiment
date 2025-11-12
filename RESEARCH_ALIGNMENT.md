@@ -14,8 +14,10 @@ This document captures the end-to-end review of the Mini-Quest Arena codebase ag
    - Corrected the competency EMA calculation and adaptive-difficulty adjustment typo, re-enabling the “neither too hard nor too easy” auto-curriculum described for XLand.
 3. **Research-grade evaluation metrics** (`ml/evaluation_system.py`)
    - Added Nash-style baselines per task, normalized score percentiles (P10–P90), normalized task annotations, and participation-rate tracking; population summaries now include these aggregates so agents are compared across the entire distribution like in the paper.
-4. **Documentation alignment** (`README.md`)
-   - Documented how the system maps onto the DeepMind loop and spelled out the new evaluation procedure to keep the repository self-describing.
+4. **LLM bridge + hybrid control** (`ml/llm_bridge.py`, `ml_example.py`, `.env*`)
+   - Introduced the `LLMGoalCoach`, `HybridLLMAgent`, tool registry, demo controller, CLI demo mode, and environment-variable scaffolding so tiny LLMs can interpret goals, validate progress, and issue Mini-Quest actions through tools.
+5. **Documentation alignment** (`README.md`)
+   - Documented how the system maps onto the DeepMind loop, spelled out the new evaluation procedure, and described the LLM-assisted workflow so the repository is self-describing.
 
 ## Verification & Next Steps
 - Serialization helpers already used for evaluation output cover the new metrics; no additional tooling was required.

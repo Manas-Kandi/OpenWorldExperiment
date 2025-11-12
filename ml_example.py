@@ -20,6 +20,7 @@ Usage:
     python ml_example.py --mode quick_test    # Quick demonstration
     python ml_example.py --mode research      # Full research configuration
     python ml_example.py --mode ablation      # Run ablation study
+    python ml_example.py --mode llm_demo      # Demonstrate LLM tool control
 """
 
 import argparse
@@ -217,6 +218,37 @@ def run_ablation_study():
         print(f"Ablation study failed: {str(e)}")
         return None
 
+def run_llm_demo(goal_text: str, stream: bool = False):
+    """Demonstrate LLM-powered tool control."""
+    print("\n" + "=" * 60)
+    print("RUNNING LLM TOOL DEMO")
+    print("=" * 60)
+    
+    from ml import LLMGoalCoach, MiniQuestToolbox, SimpleMiniQuestController
+    
+    controller = SimpleMiniQuestController()
+    toolbox = MiniQuestToolbox(controller)
+    coach = LLMGoalCoach(toolbox)
+    
+    state_summary = controller.summarize_state()
+    print(f"Goal: {goal_text}")
+    print(f"Initial state: {state_summary}")
+    
+    plan = coach.propose_plan(goal_text, state_summary, stream=stream)
+    
+    print(f"\nLLM Thought: {plan.thought}")
+    if not plan.actions:
+        print("LLM produced no actions.")
+        return
+    
+    for idx, action in enumerate(plan.actions, 1):
+        try:
+            result = toolbox.execute(action)
+            print(f"Step {idx}: tool={action.tool}, obs={result.observation}")
+        except Exception as exc:
+            print(f"Tool execution failed: {exc}")
+            break
+
 def demonstrate_components():
     """Demonstrate individual framework components."""
     print("\n" + "=" * 60)
@@ -363,12 +395,13 @@ Examples:
   python ml_example.py --mode research       # Full research experiment
   python ml_example.py --mode ablation       # Run ablation study
   python ml_example.py --mode components     # Demonstrate components
+  python ml_example.py --mode llm_demo       # Run LLM planning/tooling demo
         """
     )
     
     parser.add_argument(
         '--mode',
-        choices=['quick_test', 'research', 'ablation', 'components'],
+        choices=['quick_test', 'research', 'ablation', 'components', 'llm_demo'],
         default='quick_test',
         help='Execution mode'
     )
@@ -385,6 +418,12 @@ Examples:
         type=str,
         default='ml_example_output',
         help='Base output directory'
+    )
+    parser.add_argument(
+        '--goal',
+        type=str,
+        default='Collect the purple cube without touching walls.',
+        help='Goal description for llm_demo mode'
     )
     
     args = parser.parse_args()
@@ -406,6 +445,9 @@ Examples:
         results = run_ablation_study()
     elif args.mode == 'components':
         demonstrate_components()
+        results = None
+    elif args.mode == 'llm_demo':
+        run_llm_demo(args.goal)
         results = None
     
     # Final summary

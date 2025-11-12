@@ -1,0 +1,30 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Node/Web artifacts
+node_modules/
+dist/
+build/
+.parcel-cache/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Logs & data
+*.log
+training_output/
+experiments/
+
+# OS / Editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
