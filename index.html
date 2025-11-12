@@ -3,40 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini-Quest Arena - Open-Ended Learning Environment</title>
+    <title>Mini-Quest Arena</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="game-container">
         <header class="game-header">
-            <h1><i class="fas fa-gamepad"></i> Mini-Quest Arena</h1>
+            <h1>Mini-Quest Arena</h1>
             <div class="game-stats">
-                <div class="stat-item">
-                    <i class="fas fa-trophy"></i>
-                    <span id="score">0</span>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-clock"></i>
-                    <span id="timer">0:00</span>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-shoe-prints"></i>
-                    <span id="moves">0</span>
-                </div>
+                <div class="stat-item">Score: <span id="score">0</span></div>
+                <div class="stat-item">Time: <span id="timer">0:00</span></div>
+                <div class="stat-item">Moves: <span id="moves">0</span></div>
             </div>
         </header>
 
         <main class="game-main">
             <div class="goal-panel">
-                <div class="goal-header">
-                    <i class="fas fa-bullseye"></i>
-                    <h2>Current Goal</h2>
-                </div>
-                <div class="goal-content" id="goal-text">
-                    Loading goal...
-                </div>
+                <h2>Current Goal</h2>
+                <div class="goal-content" id="goal-text">Loading goal...</div>
                 <div class="goal-timer" id="goal-timer">
                     <div class="timer-bar"></div>
                 </div>
@@ -56,41 +40,33 @@
 
             <div class="control-panel">
                 <div class="controls-section">
-                    <h3><i class="fas fa-arrows-alt"></i> Movement</h3>
+                    <h3>Movement</h3>
                     <div class="movement-controls">
-                        <div class="control-row">
-                            <button class="control-btn" data-action="move-up"><i class="fas fa-arrow-up"></i></button>
-                        </div>
-                        <div class="control-row">
-                            <button class="control-btn" data-action="move-left"><i class="fas fa-arrow-left"></i></button>
-                            <button class="control-btn" data-action="move-down"><i class="fas fa-arrow-down"></i></button>
-                            <button class="control-btn" data-action="move-right"><i class="fas fa-arrow-right"></i></button>
-                        </div>
+                        <button class="control-btn" data-action="move-up">↑</button>
+                        <button class="control-btn" data-action="move-left">←</button>
+                        <button class="control-btn" data-action="move-down">↓</button>
+                        <button class="control-btn" data-action="move-right">→</button>
                     </div>
                 </div>
 
                 <div class="controls-section">
-                    <h3><i class="fas fa-hand-rock"></i> Actions</h3>
-                    <div class="action-controls">
-                        <button class="action-btn" data-action="pickup"><i class="fas fa-hand-paper"></i> Pickup</button>
-                        <button class="action-btn" data-action="drop"><i class="fas fa-hand-point-down"></i> Drop</button>
-                        <button class="action-btn" data-action="interact"><i class="fas fa-mouse-pointer"></i> Interact</button>
-                    </div>
+                    <h3>Actions</h3>
+                    <button class="action-btn" data-action="pickup">Pickup</button>
+                    <button class="action-btn" data-action="drop">Drop</button>
+                    <button class="action-btn" data-action="interact">Interact</button>
                 </div>
 
-                <div class="controls-section">
-                    <h3><i class="fas fa-gamepad"></i> Game</h3>
-                    <div class="game-controls">
-                        <button class="game-btn primary" id="new-game-btn"><i class="fas fa-play"></i> New Game</button>
-                        <button class="game-btn secondary" id="reset-btn"><i class="fas fa-redo"></i> Reset</button>
-                        <button class="game-btn secondary" id="ai-toggle-btn"><i class="fas fa-robot"></i> AI: OFF</button>
-                    </div>
+                <div class="controls-section game-controls">
+                    <h3>Game</h3>
+                    <button class="game-btn" id="new-game-btn">New Game</button>
+                    <button class="game-btn secondary" id="reset-btn">Reset</button>
+                    <button class="game-btn secondary" id="ai-toggle-btn">AI: OFF</button>
                 </div>
             </div>
         </main>
 
         <div class="inventory-panel">
-            <h3><i class="fas fa-backpack"></i> Inventory</h3>
+            <h3>Inventory</h3>
             <div class="inventory-slots" id="inventory-slots">
                 <div class="inventory-slot empty"></div>
                 <div class="inventory-slot empty"></div>
