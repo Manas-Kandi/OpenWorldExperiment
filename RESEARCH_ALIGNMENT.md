@@ -16,8 +16,10 @@ This document captures the end-to-end review of the Mini-Quest Arena codebase ag
    - Added Nash-style baselines per task, normalized score percentiles (P10–P90), normalized task annotations, and participation-rate tracking; population summaries now include these aggregates so agents are compared across the entire distribution like in the paper.
 4. **LLM bridge + hybrid control** (`ml/llm_bridge.py`, `ml_example.py`, `.env*`)
    - Introduced the `LLMGoalCoach`, `HybridLLMAgent`, tool registry, demo controller, CLI demo mode, and environment-variable scaffolding so tiny LLMs can interpret goals, validate progress, and issue Mini-Quest actions through tools.
-5. **Documentation alignment** (`README.md`)
-   - Documented how the system maps onto the DeepMind loop, spelled out the new evaluation procedure, and described the LLM-assisted workflow so the repository is self-describing.
+5. **Live frontend integration** (`llm_server.py`, `game.js`, `index.html`, `styles.css`)
+   - Added a FastAPI endpoint that streams plans to the browser plus UI/state hooks so the LLM literally plays the canvas game while showing its thoughts, closing the loop between research agent and visualization.
+6. **Documentation alignment** (`README.md`)
+   - Documented how the system maps onto the DeepMind loop, spelled out the new evaluation procedure, and described the LLM-assisted workflow (CLI + browser) so the repository is self-describing.
 
 ## Verification & Next Steps
 - Serialization helpers already used for evaluation output cover the new metrics; no additional tooling was required.

@@ -220,6 +220,23 @@ for chunk in completion:
 ```
 Swap in task- and tool-specific prompts (as done in `LLMGoalCoach`) to let the model reason about goals, evaluate progress, and choose the next control to execute. The hybrid agent (`HybridLLMAgent`) can then alternate between RL actions and LLM-issued tool calls, giving you a playground for “LLM-improves-RL, RL-improves-LLM” experiments.
 
+### Real-time Frontend Loop
+The `llm_server.py` FastAPI app lets the browser stream game state to the LLM and receive tool actions live:
+1. **Start the backend**
+   ```bash
+   source .venv/bin/activate
+   python -m pip install fastapi uvicorn
+   uvicorn llm_server:app --reload --port 8001
+   ```
+2. **Serve the frontend** (from the project root):
+   ```bash
+   python -m http.server 8000
+   ```
+   Then visit `http://localhost:8000/index.html`.
+3. **Toggle the “AI” button** in the UI. The goal panel now shows the LLM’s status/thoughts, and the agent will move/pick up objects based on the streamed plan. If the server goes down, the UI reports the error and pauses the LLM.
+
+You can customize the backend URL by defining `window.LLM_API_BASE_URL` before `game.js` loads, or edit `DEFAULT_LLM_API_BASE_URL` in `game.js`.
+
 ## 🎯 Future Enhancements
 
 ### Planned Features

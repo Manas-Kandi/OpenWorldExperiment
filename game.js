@@ -1,3 +1,5 @@
+const DEFAULT_LLM_API_BASE_URL = window.LLM_API_BASE_URL || 'http://localhost:8001';
+
 class MiniQuestArena {
     constructor() {
         this.canvas = document.getElementById('game-canvas');
@@ -24,6 +26,10 @@ class MiniQuestArena {
         this.maxInventorySize = 4;
         this.roundNumber = 1;
         this.timerInterval = null;
+        this.llmActionQueue = [];
+        this.llmProcessing = false;
+        this.llmApiBaseUrl = DEFAULT_LLM_API_BASE_URL;
+        this.llmThought = '';
         
         this.colors = {
             player: ['#10b981', '#f59e0b', '#ef4444', '#3b82f6'],
@@ -188,6 +194,7 @@ class MiniQuestArena {
     startNewRound() {
         this.moves = 0;
         this.inventory = [];
+        this.resetLLMState();
         this.generateArena();
         this.assignGoal();
         this.spawnPlayer();
@@ -199,7 +206,8 @@ class MiniQuestArena {
         this.render();
         
         if (this.aiEnabled) {
-            setTimeout(() => this.executeAI(), 1000);
+            this.resetLLMState(true);
+            this.processLLMLoop();
         }
     }
     
@@ -330,10 +338,6 @@ class MiniQuestArena {
         this.checkGoalProgress();
         this.updateUI();
         this.render();
-        
-        if (this.aiEnabled) {
-            setTimeout(() => this.executeAI(), 500);
-        }
     }
     
     pickupObject() {
@@ -601,25 +605,178 @@ class MiniQuestArena {
     
     toggleAI() {
         this.aiEnabled = !this.aiEnabled;
-        const btn = document.getElementById('ai-toggle-btn');
-        btn.innerHTML = `<i class="fas fa-robot"></i> AI: ${this.aiEnabled ? 'ON' : 'OFF'}`;
-        btn.classList.toggle('primary', this.aiEnabled);
+        this.updateAIToggleUI();
         
         if (this.aiEnabled) {
-            setTimeout(() => this.executeAI(), 1000);
+            this.resetLLMState(true);
+            this.updateLLMStatus('thinking');
+            this.processLLMLoop();
+        } else {
+            this.stopLLMControl('LLM paused.');
         }
     }
     
-    executeAI() {
-        if (!this.aiEnabled || !this.player || this.currentGoal?.completed) return;
+    updateAIToggleUI() {
+        const btn = document.getElementById('ai-toggle-btn');
+        if (!btn) return;
+        btn.innerHTML = `<i class="fas fa-robot"></i> AI: ${this.aiEnabled ? 'ON' : 'OFF'}`;
+        btn.classList.toggle('primary', this.aiEnabled);
+    }
+    
+    resetLLMState(preserveMessage = false) {
+        this.llmActionQueue = [];
+        this.llmProcessing = false;
+        if (!preserveMessage) {
+            this.updateLLMThought('Toggle AI to let the LLM reason about moves.');
+            this.updateLLMStatus('idle');
+        }
+    }
+    
+    stopLLMControl(message = 'LLM paused.', status = 'idle') {
+        this.llmActionQueue = [];
+        this.llmProcessing = false;
+        this.updateLLMStatus(status);
+        if (message) {
+            this.updateLLMThought(message);
+        }
+    }
+    
+    async processLLMLoop() {
+        if (!this.aiEnabled || !this.player || this.currentGoal?.completed) {
+            return;
+        }
         
-        // Simple AI that attempts to complete goals
-        const actions = ['move-up', 'move-down', 'move-left', 'move-right', 'pickup', 'drop', 'interact'];
-        const randomAction = actions[Math.floor(Math.random() * actions.length)];
+        if (this.llmActionQueue.length > 0) {
+            const nextAction = this.llmActionQueue.shift();
+            await this.executeLLMTool(nextAction);
+            if (this.aiEnabled) {
+                setTimeout(() => this.processLLMLoop(), 450);
+            }
+            return;
+        }
         
-        const btn = document.querySelector(`[data-action="${randomAction}"]`);
-        if (btn) {
-            btn.click();
+        if (this.llmProcessing) return;
+        await this.requestLLMActions();
+    }
+    
+    async requestLLMActions() {
+        if (!this.currentGoal || !this.player) return;
+        this.llmProcessing = true;
+        this.updateLLMStatus('thinking');
+        
+        try {
+            const payload = {
+                goal: this.currentGoal.description,
+                state: this.buildLLMStateSnapshot()
+            };
+            
+            const response = await fetch(`${this.llmApiBaseUrl}/llm/step`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            
+            const data = await response.json();
+            if (data.thought) {
+                this.updateLLMThought(data.thought);
+            }
+            if (Array.isArray(data.actions) && data.actions.length) {
+                this.llmActionQueue.push(...data.actions);
+            }
+        } catch (error) {
+            console.error('LLM request failed:', error);
+            this.aiEnabled = false;
+            this.updateAIToggleUI();
+            this.stopLLMControl(`LLM error: ${error.message}`, 'error');
+            return;
+        } finally {
+            this.llmProcessing = false;
+        }
+        
+        if (this.aiEnabled) {
+            setTimeout(() => this.processLLMLoop(), 350);
+        }
+    }
+    
+    buildLLMStateSnapshot() {
+        return {
+            gridSize: this.gridSize,
+            grid: this.grid.map(row => [...row]),
+            player: this.player ? {
+                id: this.player.id,
+                x: this.player.x,
+                y: this.player.y,
+                inventory: this.player.inventory.map(obj => ({ ...obj }))
+            } : null,
+            players: this.players.map(p => ({
+                id: p.id,
+                x: p.x,
+                y: p.y,
+                inventory: p.inventory.map(obj => ({ ...obj }))
+            })),
+            objects: this.objects.map(obj => ({ ...obj })),
+            goalZones: this.goalZones.map(zone => ({ ...zone })),
+            inventory: this.inventory.map(obj => ({ ...obj })),
+            goal: this.currentGoal,
+            moves: this.moves,
+            score: this.score,
+            roundNumber: this.roundNumber,
+            timeElapsed: this.gameTime
+        };
+    }
+    
+    async executeLLMTool(action) {
+        if (!action || !action.tool) return;
+        const args = action.arguments || {};
+        
+        switch(action.tool) {
+            case 'move':
+                if (args.direction) {
+                    this.movePlayer(args.direction);
+                }
+                break;
+            case 'pickup':
+                this.pickupObject();
+                break;
+            case 'drop':
+                this.dropObject();
+                break;
+            case 'interact':
+                this.interact();
+                break;
+            default:
+                console.warn('Unknown LLM tool:', action.tool);
+        }
+    }
+    
+    updateLLMThought(text) {
+        this.llmThought = text || '';
+        const el = document.getElementById('llm-thought');
+        if (el) {
+            el.textContent = this.llmThought || 'LLM is idle.';
+        }
+    }
+    
+    updateLLMStatus(state) {
+        const pill = document.getElementById('llm-status-pill');
+        if (!pill) return;
+        pill.classList.remove('idle', 'thinking', 'error');
+        switch(state) {
+            case 'thinking':
+                pill.classList.add('thinking');
+                pill.textContent = 'Thinking';
+                break;
+            case 'error':
+                pill.classList.add('error');
+                pill.textContent = 'Error';
+                break;
+            default:
+                pill.classList.add('idle');
+                pill.textContent = 'Idle';
         }
     }
     

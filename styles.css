@@ -111,6 +111,72 @@ body {
     color: var(--text-secondary);
 }
 
+.llm-status {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px dashed rgba(79, 70, 229, 0.3);
+    background: rgba(79, 70, 229, 0.05);
+}
+
+.llm-status-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary-color);
+    margin-bottom: 0.65rem;
+}
+
+.llm-status-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.llm-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    width: fit-content;
+}
+
+.llm-pill.idle {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.llm-pill.thinking {
+    background: rgba(59, 130, 246, 0.2);
+    color: #1d4ed8;
+    animation: pulse 1.2s infinite;
+}
+
+.llm-pill.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.llm-status-body p {
+    margin: 0;
+    line-height: 1.4;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 .arena-container {
     background: var(--card-bg);
     border-radius: var(--radius-lg);
