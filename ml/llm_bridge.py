@@ -1,5 +1,5 @@
 """
-LLM bridge utilities that let language models interpret Mini-Quest Arena goals,
+LLM bridge utilities that let language models interpret Open-Ended Learning Framework goals,
 evaluate plans, and issue tool-based commands into the environment.
 
 This module is intentionally lightweight: it does not assume a specific backend
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 
 class MiniQuestController(Protocol):
-    """Protocol describing the minimal control surface for Mini-Quest Arena."""
+    """Protocol describing the minimal control surface for the Open-Ended Learning Framework."""
 
     def move(self, direction: str) -> Dict[str, Any]:
         ...
@@ -105,7 +105,7 @@ class GameToolbox:
 
 class MiniQuestToolbox(GameToolbox):
     """
-    Convenience wrapper that exposes the canonical Mini-Quest Arena controls
+    Convenience wrapper that exposes the canonical Open-Ended Learning Framework controls
     (move, pickup, drop, interact) as LLM tools.
     """
 
@@ -163,7 +163,7 @@ class MiniQuestToolbox(GameToolbox):
 class SimpleMiniQuestController:
     """
     Minimal in-memory controller used for demos/tests. Replace this with a real
-    bridge to Mini-Quest Arena (for example via WebSockets or a Python wrapper
+    bridge to the Open-Ended Learning Framework (for example via WebSockets or a Python wrapper
     around the JavaScript game state) when running live.
     """
 
@@ -272,7 +272,7 @@ class LLMGoalCoach:
 
         tools_description = json.dumps(self.toolbox.describe_for_prompt(), indent=2)
         user_content = (
-            "You control Mini-Quest Arena via the provided tools.\n"
+            "You control the Open-Ended Learning Framework via the provided tools.\n"
             f"Goal: {goal_text}\n"
             f"Current State: {state_summary}\n"
             f"You may call up to {max_tool_calls} tools. "

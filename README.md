@@ -1,10 +1,14 @@
-# Mini-Quest Arena
+# Open-Ended Learning Framework
+
+[![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/demo-live-orange.svg)](https://yourusername.github.io/open-ended-learning-framework)
 
 An open-ended learning environment inspired by DeepMind's XLand research, designed for both human and AI agents to develop general problem-solving strategies through adaptive gameplay.
 
 ## 🎮 Game Concept
 
-Mini-Quest Arena is a grid-based game where players (human or AI) must interpret text goals and plan actions accordingly. Each round features a randomly generated arena with unique objectives, promoting flexible thinking rather than memorization.
+The Open-Ended Learning Framework features a grid-based game where players (human or AI) must interpret text goals and plan actions accordingly. Each round features a randomly generated arena with unique objectives, promoting flexible thinking rather than memorization.
 
 ## 🚀 Features
 
@@ -83,11 +87,49 @@ class MiniQuestArena {
 - **State Machine**: Game flow control
 - **Event System**: User input and actions
 
-## 🔧 Installation & Setup
+## 🚀 Quick Start
 
+### 🎮 Play the Game (Browser Only)
+
+The fastest way to experience the framework:
+
+1. **Open in Browser**: Simply open `index.html` in any modern web browser
+2. **No Installation Required**: The game runs entirely in your browser
+3. **Start Playing**: Use arrow keys or on-screen controls to play
+
+### 🤖 Run ML Training (Python)
+
+For the complete research experience with AI agents:
+
+```bash
+# 1. Clone and setup
+git clone https://github.com/yourusername/open-ended-learning-framework.git
+cd open-ended-learning-framework
+
+# 2. Install Python dependencies
+pip install -r requirements.txt
+# OR with development extras:
+pip install -e ".[dev]"
+
+# 3. Quick test demo
+python ml_example.py --mode quick_test
+
+# 4. Full research experiment
+python ml_example.py --mode research
+
+# 5. LLM-powered agent demo
+python ml_example.py --mode llm_demo --goal "Collect the purple cube"
+```
+
+### 🔧 Installation & Setup
+
+**For Browser Play:**
 1. **Clone or Download** the project files
 2. **Open `index.html`** in a modern web browser
 3. **No installation required** - runs entirely in the browser
+
+**For ML Research:**
+See the [🚀 Quick Start](#-quick-start) section above for Python setup instructions.
 
 ### Browser Compatibility
 - Chrome 80+
@@ -149,7 +191,7 @@ This implementation serves as a testbed for:
 
 ## 📚 Alignment with DeepMind's Open-Ended Play Research
 
-Mini-Quest Arena mirrors the loop described in *“Open-Ended Learning Leads to Generally Capable Agents”* by combining:
+The Open-Ended Learning Framework mirrors the loop described in *“Open-Ended Learning Leads to Generally Capable Agents”* by combining:
 - **Dynamic Task Generation** that keeps difficulty “just right,” powered by adaptive curricula and competency tracking.
 - **Goal-Attentive (GOAT) Policies** that echo the blog’s attention-equipped recurrent agents for subgoal discovery.
 - **Population-Based Training (PBT) & Generational Bootstrapping** so each cohort benefits from the previous one’s behaviors.
@@ -165,7 +207,7 @@ To reflect the paper’s evaluation protocol, the ML stack now:
 
 ## 🧠 LLM-Assisted Control (Hybrid RL + Tiny LLM)
 
-The `ml/llm_bridge.py` module lets a small instruction-tuned LLM read the textual goal, reason about the current world state, and issue actions through a **toolbox** that mirrors Mini-Quest Arena’s controls (`move`, `pickup`, `drop`, `interact`). This enables:
+The `ml/llm_bridge.py` module lets a small instruction-tuned LLM read the textual goal, reason about the current world state, and issue actions through a **toolbox** that mirrors the Open-Ended Learning Framework's controls (`move`, `pickup`, `drop`, `interact`). This enables:
 - Goal understanding + validation by the LLM before committing moves.
 - Tool execution that feeds directly into the same environment surface the reinforcement learner uses.
 - Hybrid agents where PPO provides fast reflexes while the LLM intervenes periodically for high-level decisions.

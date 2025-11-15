@@ -29,7 +29,7 @@ class RLConfig:
 
 class PPOAgent:
     """
-    Proximal Policy Optimization agent for training in Mini-Quest Arena.
+    Proximal Policy Optimization agent for training in the Open-Ended Learning Framework.
     Implements clipped surrogate objective and GAE advantage estimation.
     """
     

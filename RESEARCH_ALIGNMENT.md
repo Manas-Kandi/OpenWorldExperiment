@@ -1,6 +1,6 @@
 # Research Alignment Report
 
-This document captures the end-to-end review of the Mini-Quest Arena codebase against DeepMind’s *“Open-Ended Learning Leads to Generally Capable Agents”* research narrative, plus the concrete steps taken to tighten that alignment.
+This document captures the end-to-end review of the Open-Ended Learning Framework codebase against DeepMind's *"Open-Ended Learning Leads to Generally Capable Agents"* research narrative, plus the concrete steps taken to tighten that alignment.
 
 ## Codebase Audit Summary
 - **Evaluation gap** – Held-out assessments only reported mean scores, lacking the Nash-normalized percentile and participation metrics highlighted in the paper.
